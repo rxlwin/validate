@@ -34,6 +34,10 @@ func GetRuleParam(c Param, rules []Rule) (Param, error) {
 		//设置参数值
 		originValue, ok = c[rule.Key]
 		if !ok {
+			if rule.DefaultValue == false {
+				ruleParam[rule.Key] = nil
+				continue
+			}
 			originValue = rule.DefaultValue //设置默认值
 		}
 		if originValue == nil {
@@ -57,7 +61,7 @@ func GetRuleParam(c Param, rules []Rule) (Param, error) {
 }
 
 func checkDefault(r Rule) bool {
-	if r.DefaultValue == nil {
+	if r.DefaultValue == nil || r.DefaultValue == false {
 		return true
 	}
 	v := reflect.TypeOf(r.DefaultValue).String()
