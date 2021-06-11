@@ -9,14 +9,20 @@ type F struct{}
 
 func (f F) Str(v string, min int, max int) bool {
 	runeCountInString := utf8.RuneCountInString(v)
-	if runeCountInString < min || runeCountInString > max {
+	if runeCountInString < min {
+		return false
+	}
+	if max > 0 && runeCountInString > max {
 		return false
 	}
 	return true
 }
 
 func (f F) Int(v int, min int, max int) bool {
-	if v < min || v > max {
+	if v < min {
+		return false
+	}
+	if max > 0 && v > max {
 		return false
 	}
 	return true
