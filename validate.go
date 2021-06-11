@@ -77,8 +77,8 @@ func checkFun(value interface{}, rule Rule) error {
 		fun := reflect.ValueOf(f).MethodByName(name)
 		funParamNum := fun.Type().NumIn()
 		ft1 := fun.Type().In(0).Name()
-		if ft1 != (rule.T) && ft1 != "" {
-			return errors.New(rule.Key + " 规则参数错误 方法" + name + "()中 "+rule.Key+"需" + (fun.Type().In(0).Name()) + "类型")
+		if ft1 != "" && ft1 != (rule.T) {
+			return errors.New(rule.Key + " 规则参数错误 方法" + name + "()中 " + rule.Key + "需" + (fun.Type().In(0).Name()) + "类型")
 		}
 		in := []reflect.Value{reflect.ValueOf(value)}
 		if len(params)+1 != funParamNum {
