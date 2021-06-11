@@ -1,9 +1,10 @@
 package validate
 
 import (
-	"app-api-go/pkg/util"
 	"errors"
+	"fmt"
 	"reflect"
+	"strconv"
 )
 
 // Rule 参数规则
@@ -77,12 +78,12 @@ func checkFun(value interface{}, rule Rule) error {
 		}
 		in := []reflect.Value{reflect.ValueOf(value)}
 		if len(params)+1 != funParamNum {
-			return errors.New(rule.Key + " 规则参数错误 fun:" + name + " 需" + util.Val2string(funParamNum-1) + "个参数")
+			return errors.New(rule.Key + " 规则参数错误 fun:" + name + " 需" + val2string(funParamNum-1) + "个参数")
 		}
 		for i, param := range params {
 			rt := fun.Type().In(i + 1)
 			if rt != reflect.TypeOf(param) {
-				return errors.New(rule.Key + " 规则参数错误 fun:" + name + " 参" + util.Val2string(i+1) + " 需" + rt.Name() + "类型")
+				return errors.New(rule.Key + " 规则参数错误 fun:" + name + " 参" + val2string(i+1) + " 需" + rt.Name() + "类型")
 			}
 			in = append(in, reflect.ValueOf(param))
 		}
@@ -98,10 +99,41 @@ func formatValue(val interface{}, rule Rule) (interface{}, error) {
 	t := rule.T
 	switch t {
 	case "string":
-		return util.Val2string(val), nil
+		return val2string(val), nil
 	case "int":
-		return util.Val2int(val), nil
+		return val2int(val), nil
 	default:
 		return nil, errors.New(rule.Key + " 规则参数错误 未知类型: " + t)
+	}
+}
+
+func val2string(val interface{}) string {
+	switch val.(type) {
+	case string:
+		return val.(string)
+	default:
+		return fmt.Sprintf("%v", val)
+	}
+}
+
+func val2int(val interface{}) int {
+	switch val.(type) {
+	case int:
+		return val.(int)
+	case string:
+		v1 := val.(string)
+		v2, err := strconv.Atoi(v1)
+		if err != nil {
+			return 0
+		}
+		return v2
+	case float32:
+		v1 := val.(float32)
+		return int(v1)
+	case float64:
+		v1 := val.(float64)
+		return int(v1)
+	default:
+		return 0
 	}
 }
